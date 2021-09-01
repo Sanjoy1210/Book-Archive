@@ -1,4 +1,7 @@
 const searchButton = document.getElementById('search-btn');
+const spinner = document.getElementById('spinner');
+const booksContainer = document.getElementById('books-container');
+spinner.classList.add('d-none');
 
 const fetchedData = async url => {
   const res = await fetch(url);
@@ -12,13 +15,16 @@ searchButton.addEventListener('click', () => {
   const searchText = inputField.value;
   inputField.value = '';
   totalResult.textContent = '';
+  booksContainer.textContent = '';
+
+  document.getElementById('spinner').classList.remove('d-none');
 
   const url = `http://openlibrary.org/search.json?q=${searchText}`;
   fetchedData(url)
     .then(books => {
       const p = document.createElement('p');
       p.className = 'text-center';
-      p.innerText = 'Result Found: ' + books.numFound;
+      p.innerText = 'Result Found: ' + books.docs.length;
       totalResult.appendChild(p);
       displaySearchResults(books.docs)
     });
@@ -26,8 +32,9 @@ searchButton.addEventListener('click', () => {
 
 const displaySearchResults = books => {
   // console.log(books); // array
-  const booksContainer = document.getElementById('books-container');
+  // const booksContainer = document.getElementById('books-container');
   booksContainer.textContent = '';
+  document.getElementById('spinner').classList.add('d-none');
   books.forEach(book => {
     const { title, author_name, first_publish_year, publisher, cover_i } = book;
     const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
