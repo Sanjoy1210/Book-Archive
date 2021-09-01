@@ -8,17 +8,26 @@ const fetchedData = async url => {
 
 searchButton.addEventListener('click', () => {
   const inputField = document.getElementById('input-field');
+  const totalResult = document.getElementById('total-result');
   const searchText = inputField.value;
   inputField.value = '';
+  totalResult.textContent = '';
 
   const url = `http://openlibrary.org/search.json?q=${searchText}`;
   fetchedData(url)
-    .then(books => displaySearchResults(books.docs));
+    .then(books => {
+      const p = document.createElement('p');
+      p.className = 'text-center';
+      p.innerText = 'Result Found: ' + books.numFound;
+      totalResult.appendChild(p);
+      displaySearchResults(books.docs)
+    });
 });
 
 const displaySearchResults = books => {
-  console.log(books); // array
+  // console.log(books); // array
   const booksContainer = document.getElementById('books-container');
+  booksContainer.textContent = '';
   books.forEach(book => {
     const { title, author_name, first_publish_year, publisher, cover_i } = book;
     const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
