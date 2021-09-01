@@ -1,12 +1,17 @@
 const searchButton = document.getElementById('search-btn');
-const spinner = document.getElementById('spinner');
 const booksContainer = document.getElementById('books-container');
-spinner.classList.add('d-none');
+const errorMessageDiv = document.getElementById('error-message');
+// spinner.classList.add('d-none');
 
 const fetchedData = async url => {
   const res = await fetch(url);
   const data = await res.json();
   return data;
+}
+
+const toggleSpinnrer = displayStyle => {
+  const spinner = document.getElementById('spinner');
+  spinner.style.display = displayStyle;
 }
 
 searchButton.addEventListener('click', () => {
@@ -16,42 +21,73 @@ searchButton.addEventListener('click', () => {
   inputField.value = '';
   totalResult.textContent = '';
   booksContainer.textContent = '';
+  errorMessageDiv.textContent = '';
 
-  document.getElementById('spinner').classList.remove('d-none');
 
-  const url = `http://openlibrary.org/search.json?q=${searchText}`;
-  fetchedData(url)
-    .then(books => {
-      const p = document.createElement('p');
-      p.className = 'text-center';
-      p.innerText = 'Result Found: ' + books.docs.length;
-      totalResult.appendChild(p);
-      displaySearchResults(books.docs)
-    });
+  if (searchText.length === 0) {
+    displayErrorMessage();
+  }
+  else {
+    toggleSpinnrer('block');
+    const url = `http://openlibrary.org/search.json?q=${searchText}`;
+    fetchedData(url)
+      .then(books => {
+        displaySearchResults(books.docs);
+      });
+  }
 });
 
-const displaySearchResults = books => {
-  // console.log(books); // array
-  // const booksContainer = document.getElementById('books-container');
-  booksContainer.textContent = '';
-  document.getElementById('spinner').classList.add('d-none');
-  books.forEach(book => {
-    const { title, author_name, first_publish_year, publisher, cover_i } = book;
-    const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+// number of search result
+const displayNumberOfResult = number => {
+  const totalResult = document.getElementById('total-result');
+  const p = document.createElement('p');
+  p.className = 'text-center';
+  p.innerText = 'Result Found: ' + number;
+  totalResult.appendChild(p);
+}
 
-    const div = document.createElement('div');
-    div.className = 'col';
-    div.innerHTML = `
-      <div class="card h-100">
-        <img src="${imgSrc}" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">${title}</h5>
-          <p class="card-text">${author_name}</p>
-          <p class="card-text">${publisher}</p>
-          <p class="card-text">${first_publish_year}</p>
-        </div>
-      </div>
-    `;
-    booksContainer.appendChild(div);
-  });
+// display error message
+const displayErrorMessage = () => {
+  errorMessageDiv.textContent = '';
+  const p = document.createElement('p');
+  p.className = 'text-center bg-warning fw-bold fs-3';
+  p.innerText = 'No result found';
+  errorMessageDiv.appendChild(p);
+}
+
+// display all search books
+const displaySearchResults = books => {
+  console.log(books); // array
+
+  if (books.length === 0) {
+    toggleSpinnrer('none');
+    displayErrorMessage();
+  }
+  else {
+    toggleSpinnrer('none');
+    displayNumberOfResult(books.length);
+    books.forEach(book => {
+      const { title, author_name, first_publish_year, publisher, cover_i } = book;
+      if (cover_i !== undefined) {
+        const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+
+        // console.log(cover_i);
+
+        const div = document.createElement('div');
+        div.className = 'col';
+        div.innerHTML = `
+          <div class="card h-100">
+            <img src="${imgSrc}" class="card-img-top h-50" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">${title}</h5>
+              <p class="card-text">${author_name}</p>
+              <p class="card-text">${publisher}</p>
+              <p class="card-text">${first_publish_year}</p>
+            </div>
+          </div>
+        `;
+        booksContainer.appendChild(div);
+      }
+    });
+  }
 }
