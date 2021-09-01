@@ -11,8 +11,31 @@ searchButton.addEventListener('click', () => {
   const searchText = inputField.value;
   inputField.value = '';
 
-  // console.log(inputValue);
   const url = `http://openlibrary.org/search.json?q=${searchText}`;
   fetchedData(url)
-    .then(books => console.log(books.docs));
+    .then(books => displaySearchResults(books.docs));
 });
+
+const displaySearchResults = books => {
+  console.log(books); // array
+  const booksContainer = document.getElementById('books-container');
+  books.forEach(book => {
+    const { title, author_name, first_publish_year, publisher, cover_i } = book;
+    const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+
+    const div = document.createElement('div');
+    div.className = 'col';
+    div.innerHTML = `
+      <div class="card h-100">
+        <img src="${imgSrc}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">${title}</h5>
+          <p class="card-text">${author_name}</p>
+          <p class="card-text">${publisher}</p>
+          <p class="card-text">${first_publish_year}</p>
+        </div>
+      </div>
+    `;
+    booksContainer.appendChild(div);
+  });
+}
