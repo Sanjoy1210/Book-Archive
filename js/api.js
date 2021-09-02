@@ -1,7 +1,6 @@
 const searchButton = document.getElementById('search-btn');
 const booksContainer = document.getElementById('books-container');
 const errorMessageDiv = document.getElementById('error-message');
-// spinner.classList.add('d-none');
 
 // data fatch
 const fetchedData = async url => {
@@ -26,7 +25,6 @@ searchButton.addEventListener('click', () => {
   booksContainer.textContent = '';
   errorMessageDiv.textContent = '';
 
-  console.log(searchText);
   if (searchText.length === 0) {
     displayErrorMessage(searchText);
   }
@@ -53,14 +51,13 @@ const displayNumberOfResult = number => {
 const displayErrorMessage = (searchText) => {
   errorMessageDiv.textContent = '';
   const p = document.createElement('p');
-  p.className = 'text-center bg-warning fw-bold fs-3';
+  p.className = 'text-center bg-danger fw-bold fs-3';
   p.innerText = `No result found for ${searchText}`;
   errorMessageDiv.appendChild(p);
 }
 
 // display all search books
 const displaySearchResults = (books, searchText) => {
-  console.log(books); // array
 
   if (books.docs.length === 0) {
     toggleSpinnrer('none');
