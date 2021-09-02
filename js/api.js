@@ -3,17 +3,20 @@ const booksContainer = document.getElementById('books-container');
 const errorMessageDiv = document.getElementById('error-message');
 // spinner.classList.add('d-none');
 
+// data fatch
 const fetchedData = async url => {
   const res = await fetch(url);
   const data = await res.json();
   return data;
 }
 
+// spinner toggle
 const toggleSpinnrer = displayStyle => {
   const spinner = document.getElementById('spinner');
   spinner.style.display = displayStyle;
 }
 
+// button handler
 searchButton.addEventListener('click', () => {
   const inputField = document.getElementById('input-field');
   const totalResult = document.getElementById('total-result');
@@ -31,7 +34,7 @@ searchButton.addEventListener('click', () => {
     toggleSpinnrer('block');
     const url = `https://openlibrary.org/search.json?q=${searchText}`;
     fetchedData(url)
-      .then(books => displaySearchResults(books.docs, searchText));
+      .then(books => displaySearchResults(books, searchText));
   }
 });
 
@@ -59,30 +62,28 @@ const displayErrorMessage = (searchText) => {
 const displaySearchResults = (books, searchText) => {
   console.log(books); // array
 
-  if (books.length === 0) {
+  if (books.docs.length === 0) {
     toggleSpinnrer('none');
     displayErrorMessage(searchText);
   }
   else {
     toggleSpinnrer('none');
-    displayNumberOfResult(books.length);
+    displayNumberOfResult(books.numFound);
 
-    books.slice(0, 20).forEach(book => {
+    books.docs.slice(0, 20).forEach(book => {
       const { title, author_name, first_publish_year, publisher, cover_i } = book;
 
       const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
-
-      // console.log(cover_i);
 
       const div = document.createElement('div');
       div.className = 'col';
       div.innerHTML = `
         <div class="card h-100">
-          <img src="${imgSrc}" class="card-img-top h-50" alt="...">
+          <img src="${imgSrc}" class="card-img-top h-50" alt="${imgSrc}">
           <div class="card-body">
             <h5 class="card-title">${title}</h5>
-            <p class="card-text">Writer: ${author_name}</p>
-            <p class="card-text">Publisher: ${publisher}</p>
+            <p class="card-text">${author_name ? `Writer: ${author_name[0]}` : ''}</p>
+            <p class="card-text">${publisher ? `Publisher: ${publisher[0]}` : ''}</p>
             <p class="card-text">First Pulbish Year: ${first_publish_year}</p>
           </div>
         </div>
