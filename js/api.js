@@ -29,7 +29,7 @@ searchButton.addEventListener('click', () => {
   }
   else {
     toggleSpinnrer('block');
-    const url = `http://openlibrary.org/search.json?q=${searchText}`;
+    const url = `https://openlibrary.org/search.json?q=${searchText}`;
     fetchedData(url)
       .then(books => {
         displaySearchResults(books.docs);
@@ -80,9 +80,9 @@ const displaySearchResults = books => {
             <img src="${imgSrc}" class="card-img-top h-50" alt="...">
             <div class="card-body">
               <h5 class="card-title">${title}</h5>
-              <p class="card-text">${author_name}</p>
-              <p class="card-text">${publisher}</p>
-              <p class="card-text">${first_publish_year}</p>
+              <p class="card-text">Writer: ${author_name}</p>
+              <p class="card-text">Publisher: ${publisher}</p>
+              <p class="card-text">First Pulbish Year: ${first_publish_year}</p>
             </div>
           </div>
         `;
