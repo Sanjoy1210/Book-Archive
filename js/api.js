@@ -23,17 +23,15 @@ searchButton.addEventListener('click', () => {
   booksContainer.textContent = '';
   errorMessageDiv.textContent = '';
 
-
+  console.log(searchText);
   if (searchText.length === 0) {
-    displayErrorMessage();
+    displayErrorMessage(searchText);
   }
   else {
     toggleSpinnrer('block');
     const url = `https://openlibrary.org/search.json?q=${searchText}`;
     fetchedData(url)
-      .then(books => {
-        displaySearchResults(books.docs);
-      });
+      .then(books => displaySearchResults(books.docs, searchText));
   }
 });
 
@@ -41,53 +39,55 @@ searchButton.addEventListener('click', () => {
 const displayNumberOfResult = number => {
   const totalResult = document.getElementById('total-result');
   const p = document.createElement('p');
+  let result = number;
+  if (result > 20) result = 20;
   p.className = 'text-center';
-  p.innerText = 'Result Found: ' + number;
+  p.innerText = `Showing ${result} of ${number} result found`;
   totalResult.appendChild(p);
 }
 
 // display error message
-const displayErrorMessage = () => {
+const displayErrorMessage = (searchText) => {
   errorMessageDiv.textContent = '';
   const p = document.createElement('p');
   p.className = 'text-center bg-warning fw-bold fs-3';
-  p.innerText = 'No result found';
+  p.innerText = `No result found for ${searchText}`;
   errorMessageDiv.appendChild(p);
 }
 
 // display all search books
-const displaySearchResults = books => {
+const displaySearchResults = (books, searchText) => {
   console.log(books); // array
 
   if (books.length === 0) {
     toggleSpinnrer('none');
-    displayErrorMessage();
+    displayErrorMessage(searchText);
   }
   else {
     toggleSpinnrer('none');
     displayNumberOfResult(books.length);
-    books.forEach(book => {
+
+    books.slice(0, 20).forEach(book => {
       const { title, author_name, first_publish_year, publisher, cover_i } = book;
-      if (cover_i !== undefined) {
-        const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
 
-        // console.log(cover_i);
+      const imgSrc = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
 
-        const div = document.createElement('div');
-        div.className = 'col';
-        div.innerHTML = `
-          <div class="card h-100">
-            <img src="${imgSrc}" class="card-img-top h-50" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">${title}</h5>
-              <p class="card-text">Writer: ${author_name}</p>
-              <p class="card-text">Publisher: ${publisher}</p>
-              <p class="card-text">First Pulbish Year: ${first_publish_year}</p>
-            </div>
+      // console.log(cover_i);
+
+      const div = document.createElement('div');
+      div.className = 'col';
+      div.innerHTML = `
+        <div class="card h-100">
+          <img src="${imgSrc}" class="card-img-top h-50" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">${title}</h5>
+            <p class="card-text">Writer: ${author_name}</p>
+            <p class="card-text">Publisher: ${publisher}</p>
+            <p class="card-text">First Pulbish Year: ${first_publish_year}</p>
           </div>
-        `;
-        booksContainer.appendChild(div);
-      }
+        </div>
+      `;
+      booksContainer.appendChild(div);
     });
   }
 }
